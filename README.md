@@ -1,6 +1,8 @@
 # WDM-Ex.No-3--IMPLEMENTATION-OF-APRIORI-ALGORITHM-IN-PYTHON-
+## Name: Madhu Mitha V
+## Date:
 **Aim:** 
-            To implement Apriori Algorithm in python. <br>
+To implement Apriori Algorithm in python. <br>
 **Implementation Steps:**
 Follow these steps to implement Apriori algorithm in Python: 
 
@@ -20,11 +22,7 @@ following script:
 store_data = pd.read_csv('D:\\Datasets\\store_data.csv') 
 Let's call the head() function to see how the dataset looks: 
 store_data.head() 
-
-<img width="729" height="172" alt="image" src="https://github.com/user-attachments/assets/25db435e-c7f0-407d-a56d-8450d13abd09" />
-
-
-
+<img width="1382" height="477" alt="image" src="https://github.com/user-attachments/assets/037c3089-9f22-4748-b58d-99798292ccb8" />
 A snippet of the dataset is shown in the above screenshot. If you carefully look at the data, we can see that the header 
 is actually the first transaction. Each row corresponds to a transaction and each column corresponds to an item 
 purchased in that specific transaction. The NaN tells us that the item represented by the column was not purchased in 
@@ -36,9 +34,6 @@ store_data = pd.read_csv('D:\\Datasets\\store_data.csv', header=None)
 Now execute the head() function: 
 store_data.head() 
 In this updated output you will see that the first line is now treated as a record instead of header as shown below: 
-<img width="706" height="155" alt="image" src="https://github.com/user-attachments/assets/6a99a356-cdac-40d7-acd5-98d0ad9d2ae1" />
-
- 
 Now we will use the Apriori algorithm to find out which items are commonly sold together, so that store owner can 
 take action to place the related items together or advertise them together in order to have increased profit. 
 **Data Preprocessing** 
@@ -67,8 +62,6 @@ association_rules = apriori(records, min_support=0.0045, min_confidence=0.2, min
 association_results = list(association_rules) 
 In the second line here we convert the rules found by the apriori class into a list since it is easier to view the results in 
 this form. 
- 
-
 **Viewing the Results** 
 Let's first find the total number of rules mined by the apriori class. Execute the following script: 
 print(len(association_rules)) 
@@ -133,42 +126,233 @@ for this rule is 0.3006 which means that out of all the transactions containing 
 are likely to contain escalope as well. Finally, lift of 3.79 shows that the escalope is 3.79 more likely to be bought by 
 the customers that buy mushroom cream sauce, compared to its default sale. 
  
- 
- 
- 
- 
-Program: 
-```import numpy as np 
-#import matplotlib.pyplot as plt 
-import pandas as pd 
-from apyori import apriori 
-store_data = pd.read_csv('C:\\Users\\Welcome\\Downloads\\store_data1.csv') 
-store_data.head() 
-records = [] 
-for i in range(0, 3): 
-    records.append([str(store_data.values[i,j]) for j in range(0, 20)]) 
-association_rules = apriori(records, min_support=0.0045, min_confidence=0.2, min_lift=3, min_length=2) 
-association_results = list(association_rules) 
-print(len(association_results)) 
-print(association_results[0]) 
-for item in association_results: 
-    pair = item[0]  
-    items = [x for x in pair] 
-    print("Rule: " + items[0] + " -> " + items[1]) 
-    print("Support: " + str(item[1])) 
-    print("Confidence: " + str(item[2][0][2])) 
-    print("Lift: " + str(item[2][0][3])) 
-    print("=====================================") 
- 
- 
-```    
- 
-Output: 
- 
- 
- <img width="337" height="557" alt="image" src="https://github.com/user-attachments/assets/e885f01c-3af3-4bfb-99c9-ef14c5a61d01" />
+## Program: 
+```
 
+import pandas as pd
+from apyori import apriori
+
+# Load the transaction dataset
+store_data = pd.read_csv("store_data.csv", header=None)
+
+# Display the first five rows
+print("Dataset:")
+print(store_data.head())
+
+# Convert the dataset into a list of transactions
+records = []
+
+for i in range(len(store_data)):
+    transaction = [
+        str(item).strip()
+        for item in store_data.iloc[i]
+        if pd.notna(item) and str(item).strip() != ""
+    ]
+    records.append(transaction)
+
+print("\nTotal transactions:", len(records))
+
+# Apply the Apriori algorithm
+association_rules = apriori(
+    records,
+    min_support=0.0045,
+    min_confidence=0.2,
+    min_lift=3,
+    min_length=2
+)
+
+association_results = list(association_rules)
+
+# Display the results
+print("\nTotal association rules:", len(association_results))
+
+for item in association_results:
+    pair = list(item.items)
+    print("\nRule:", " -> ".join(pair))
+    print("Support:", round(item.support, 4))
+
+    for rule in item.ordered_statistics:
+        if rule.items_base and rule.items_add:
+            print("Association:",
+                  list(rule.items_base), "->", list(rule.items_add))
+            print("Confidence:", round(rule.confidence, 4))
+            print("Lift:", round(rule.lift, 4))
+
+```    
+## Output:
+```
+C:\Users\admin\OneDrive\Documents\Apriori>
+python apriori.py
+Dataset:
+              0   ...         19
+0         shrimp  ...  olive oil
+1        burgers  ...        NaN
+2        chutney  ...        NaN
+3         turkey  ...        NaN
+4  mineral water  ...        NaN
+
+[5 rows x 20 columns]
+
+Total transactions: 7501
+
+Total association rules: 24
+
+Rule: chicken -> light cream
+Support: 0.0045
+Association: ['light cream'] -> ['chicken']
+Confidence: 0.2906
+Lift: 4.844
+
+Rule: escalope -> mushroom cream sauce
+Support: 0.0057
+Association: ['mushroom cream sauce'] -> ['escalope']
+Confidence: 0.3007
+Lift: 3.7908
+
+Rule: pasta -> escalope
+Support: 0.0059
+Association: ['pasta'] -> ['escalope']
+Confidence: 0.3729
+Lift: 4.7008
+
+Rule: ground beef -> herb & pepper
+Support: 0.016
+Association: ['herb & pepper'] -> ['ground beef']
+Confidence: 0.3235
+Lift: 3.292
+
+Rule: ground beef -> tomato sauce
+Support: 0.0053
+Association: ['tomato sauce'] -> ['ground beef']
+Confidence: 0.3774
+Lift: 3.8407
+
+Rule: olive oil -> whole wheat pasta
+Support: 0.008
+Association: ['whole wheat pasta'] -> ['olive oil']
+Confidence: 0.2715
+Lift: 4.1224
+
+Rule: pasta -> shrimp
+Support: 0.0051
+Association: ['pasta'] -> ['shrimp']
+Confidence: 0.322
+Lift: 4.5067
+
+Rule: frozen vegetables -> chocolate -> shrimp
+Support: 0.0053
+Association: ['frozen vegetables', 'chocolate'] -> ['shrimp']
+Confidence: 0.2326
+Lift: 3.2545
+Association: ['chocolate', 'shrimp'] -> ['frozen vegetables']
+Confidence: 0.2963
+Lift: 3.1084
+
+Rule: cooking oil -> ground beef -> spaghetti
+Support: 0.0048
+Association: ['cooking oil', 'ground beef'] -> ['spaghetti']
+Confidence: 0.5714
+Lift: 3.282
+Association: ['cooking oil', 'spaghetti'] -> ['ground beef']
+Confidence: 0.3025
+Lift: 3.079
+
+Rule: frozen vegetables -> ground beef -> spaghetti
+Support: 0.0087
+Association: ['frozen vegetables', 'spaghetti'] -> ['ground beef']
+Confidence: 0.311
+Lift: 3.1653
+
+Rule: frozen vegetables -> milk -> olive oil
+Support: 0.0048
+Association: ['frozen vegetables', 'milk'] -> ['olive oil']
+Confidence: 0.2034
+Lift: 3.0883
+Association: ['frozen vegetables', 'olive oil'] -> ['milk']
+Confidence: 0.4235
+Lift: 3.2684
+
+Rule: frozen vegetables -> mineral water -> shrimp
+Support: 0.0072
+Association: ['mineral water', 'shrimp'] -> ['frozen vegetables']
+Confidence: 0.3051
+Lift: 3.2006
+
+Rule: frozen vegetables -> olive oil -> spaghetti
+Support: 0.0057
+Association: ['frozen vegetables', 'spaghetti'] -> ['olive oil']
+Confidence: 0.2057
+Lift: 3.124
+
+Rule: frozen vegetables -> shrimp -> spaghetti
+Support: 0.006
+Association: ['frozen vegetables', 'spaghetti'] -> ['shrimp']
+Confidence: 0.2153
+Lift: 3.0131
+
+Rule: frozen vegetables -> tomatoes -> spaghetti
+Support: 0.0067
+Association: ['frozen vegetables', 'spaghetti'] -> ['tomatoes']
+Confidence: 0.2392
+Lift: 3.498
+Association: ['tomatoes', 'spaghetti'] -> ['frozen vegetables']
+Confidence: 0.3185
+Lift: 3.3411
+
+Rule: grated cheese -> ground beef -> spaghetti
+Support: 0.0053
+Association: ['grated cheese', 'spaghetti'] -> ['ground beef']
+Confidence: 0.3226
+Lift: 3.2831
+
+Rule: mineral water -> ground beef -> herb & pepper
+Support: 0.0067
+Association: ['mineral water', 'herb & pepper'] -> ['ground beef']
+Confidence: 0.3906
+Lift: 3.9757
+
+Rule: ground beef -> herb & pepper -> spaghetti
+Support: 0.0064
+Association: ['herb & pepper', 'spaghetti'] -> ['ground beef']
+Confidence: 0.3934
+Lift: 4.0044
+
+Rule: milk -> olive oil -> ground beef
+Support: 0.0049
+Association: ['milk', 'ground beef'] -> ['olive oil']
+Confidence: 0.2242
+Lift: 3.4049
+
+Rule: shrimp -> ground beef -> spaghetti
+Support: 0.006
+Association: ['shrimp', 'ground beef'] -> ['spaghetti']
+Confidence: 0.5233
+Lift: 3.0053
+
+Rule: milk -> olive oil -> spaghetti
+Support: 0.0072
+Association: ['milk', 'spaghetti'] -> ['olive oil']
+Confidence: 0.203
+Lift: 3.0825
+
+Rule: olive oil -> mineral water -> soup
+Support: 0.0052
+Association: ['mineral water', 'soup'] -> ['olive oil']
+Confidence: 0.2254
+Lift: 3.423
+
+Rule: olive oil -> pancakes -> spaghetti
+Support: 0.0051
+Association: ['pancakes', 'spaghetti'] -> ['olive oil']
+Confidence: 0.2011
+Lift: 3.0529
+
+Rule: frozen vegetables -> milk -> mineral water -> spaghetti
+Support: 0.0045
+Association: ['milk', 'mineral water', 'spaghetti'] -> ['frozen vegetables']
+Confidence: 0.2881
+Lift: 3.0228
+```
  
- 
-Result: 
-             Thus, the python program for implementing Apriori Algorithm has been executed successfully. f
+## Result: 
+Thus, the python program for implementing Apriori Algorithm has been executed successfully. f
